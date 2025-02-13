@@ -8,6 +8,8 @@ import com.jphilips.inventorymanagementapi.dto.MyUserResponseDTO;
 import com.jphilips.inventorymanagementapi.dto.MyUserUpdateDTO;
 import com.jphilips.inventorymanagementapi.service.MyUserService;
 
+import jakarta.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @RequestMapping("/api/users")
+@Valid
 public class MyUserController {
 
 	private MyUserService myUserService;
@@ -42,13 +45,13 @@ public class MyUserController {
 	}
 	
 	@PostMapping()
-	public ResponseEntity<Void> addUser(@RequestBody MyUserRequestDTO myUserRequestDTO) {
+	public ResponseEntity<Void> addUser(@Valid @RequestBody MyUserRequestDTO myUserRequestDTO) {
 		myUserService.addUser(myUserRequestDTO);
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<Void>  updateUser(@PathVariable Long id ,@RequestBody MyUserUpdateDTO myUserUpdateDTO) {
+	public ResponseEntity<Void>  updateUser(@PathVariable Long id ,@Valid @RequestBody MyUserUpdateDTO myUserUpdateDTO) {
 		myUserService.updateUser(id, myUserUpdateDTO);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
