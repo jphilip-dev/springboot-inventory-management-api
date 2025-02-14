@@ -1,7 +1,13 @@
 package com.jphilips.inventorymanagementapi.entity;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -21,7 +27,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MyUser {
+public class MyUser implements UserDetails{
+
+	private static final long serialVersionUID = -8683119692050511460L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -61,6 +69,13 @@ public class MyUser {
 		newRole.setRole(role.strip().toUpperCase());
 
 		roles.add(newRole);
+	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return roles.stream()
+						.map(role -> new SimpleGrantedAuthority(role.getRole()))
+						.collect(Collectors.toList());
 	}
 
 

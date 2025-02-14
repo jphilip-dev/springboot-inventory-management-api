@@ -2,6 +2,11 @@ package com.jphilips.inventorymanagementapi.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.jphilips.inventorymanagementapi.dto.MyUserRequestDTO;
@@ -14,11 +19,14 @@ import com.jphilips.inventorymanagementapi.repository.MyUserRepository;
 import jakarta.transaction.Transactional;
 
 @Service
-public class MyUserService {
+public class MyUserService implements UserDetailsService{
+	private PasswordEncoder encoder;
 	private MyUserRepository myUserRepository;
+	
 
-	public MyUserService(MyUserRepository myUserRepository) {
+	public MyUserService(MyUserRepository myUserRepository,PasswordEncoder encoder) {
 		this.myUserRepository = myUserRepository;
+		this.encoder=encoder;
 	}
 
 	public Page<MyUserResponseDTO> getAllUsers(Pageable pageable) {
@@ -44,7 +52,7 @@ public class MyUserService {
 
 		MyUser newUser = MyUserMapper.toEntity(myUserRequestDTO);
 
-		newUser.setPassword("EncryptPassword");
+		newUser.setPassword(encoder.encode(myUserRequestDTO.getPassword()));
 		newUser.setActive(true);
 
 		newUser.addRole("USER");
@@ -58,7 +66,7 @@ public class MyUserService {
 		
 		user.setFirstName(myUserUpdateDTO.getFirstName());
 		user.setLastName(myUserUpdateDTO.getLastName());
-		user.setPassword(myUserUpdateDTO.getPassword()); // need to encrypt first, ill do this later after adding security
+		user.setPassword(encoder.encode(myUserUpdateDTO.getPassword()) ); // need to encrypt first, ill do this later after adding security
 		
 		// check authentication, only allow if have Admin role, later after adding security
 		user.setActive(myUserUpdateDTO.getIsActive());
@@ -73,6 +81,12 @@ public class MyUserService {
 	    }
 		
 	}
+	
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		return myUserRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
+	}
+
 
 	// helper methods
 
@@ -91,4 +105,5 @@ public class MyUserService {
 		return myUserRepository.findById(id).orElseThrow(null);
 	}
 
+	
 }
