@@ -13,6 +13,8 @@ import java.util.Optional;
 public interface MyUserRepository extends JpaRepository<MyUser, Long> {
 	
 	@Query("Select u From MyUser u LEFT JOIN FETCH u.roles")
+	Page<MyUser> findAllWithRoles(Pageable pageable);
+	
 	Page<MyUser> findAll(Pageable pageable);
 	
 	@Query("Select u From MyUser u LEFT JOIN FETCH u.roles where u.id = :id")

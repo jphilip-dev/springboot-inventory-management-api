@@ -1,12 +1,14 @@
 package com.jphilips.inventorymanagementapi.dto;
 
+import java.util.List;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class MyUserResponseDTO {
+public class MyUserResponseWithRolesDTO {
 	private Long id;
 
 	private String username;
@@ -16,4 +18,6 @@ public class MyUserResponseDTO {
 	private String lastName;
 	
 	private Boolean isActive;
+
+	private List<String> roles;
 }

@@ -4,6 +4,7 @@ import java.util.stream.Collectors;
 
 import com.jphilips.inventorymanagementapi.dto.MyUserRequestDTO;
 import com.jphilips.inventorymanagementapi.dto.MyUserResponseDTO;
+import com.jphilips.inventorymanagementapi.dto.MyUserResponseWithRolesDTO;
 import com.jphilips.inventorymanagementapi.entity.MyUser;
 
 public class MyUserMapper {
@@ -14,11 +15,22 @@ public class MyUserMapper {
 								myUser.getUsername(), 
 								myUser.getFirstName(),
 								myUser.getLastName(), 
+								myUser.isActive());
+	}
+	
+	public static MyUserResponseWithRolesDTO withRolesToDto(MyUser myUser) {
+		return new MyUserResponseWithRolesDTO(
+								myUser.getId(),
+								myUser.getUsername(), 
+								myUser.getFirstName(),
+								myUser.getLastName(), 
 								myUser.isActive(),
 								myUser.getRoles().stream()
 										.map(role -> role.getRole())
 										.collect(Collectors.toList()));
 	}
+	
+	
 	
 	public static MyUser toEntity(MyUserRequestDTO myUserRequestDTO) {
 		MyUser newUser = new MyUser();
